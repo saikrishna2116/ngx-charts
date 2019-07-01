@@ -14,6 +14,7 @@ import {
       [title]="formattedLabel"
       tabindex="-1"
       [class.active]="isActive"
+      [class.select]="isSelect"
       (click)="select.emit(formattedLabel)">
       <span
         class="legend-label-color"
@@ -33,6 +34,7 @@ export class LegendEntryComponent {
   @Input() label: any;
   @Input() formattedLabel: string;
   @Input() isActive: boolean = false;
+  @Input() isSelect: boolean = false;
 
   @Output() select: EventEmitter<any> = new EventEmitter();
   @Output() activate: EventEmitter<any> = new EventEmitter();

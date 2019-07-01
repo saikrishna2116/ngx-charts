@@ -23,7 +23,8 @@ import { formatLabel } from '../label.helper';
               [formattedLabel]="entry.formattedLabel"
               [color]="entry.color"
               [isActive]="isActive(entry)"
-              (select)="labelClick.emit($event)"
+              [isSelect]="isSelect(entry)"
+              (select)="select($event)"
               (activate)="activate($event)"
               (deactivate)="deactivate($event)">
             </ngx-charts-legend-entry>
@@ -51,6 +52,8 @@ export class LegendComponent implements OnChanges {
   @Output() labelDeactivate: EventEmitter<any> = new EventEmitter();
 
   legendEntries: any[] = [];
+  check = [];
+  flag = true;
 
   constructor(private cd: ChangeDetectorRef) { }
 
@@ -91,6 +94,30 @@ export class LegendComponent implements OnChanges {
       return entry.label === d.name;
     });
     return item !== undefined;
+  }
+
+  isSelect(entry): boolean {
+    if (this.flag) {
+      this.flag = false;
+      for (let i = 0; i < this.data.length; i ++) {
+        this.check[i] = false;
+      }
+    }
+
+    if(this.check[this.data.indexOf(entry.label)]) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  select(item) {
+    if (this.check[this.data.indexOf(item)]) {
+      this.check[this.data.indexOf(item)] = false;
+    } else {
+      this.check[this.data.indexOf(item)] = true;
+    }
+    this.labelClick.emit(item);
   }
 
   activate(item) {

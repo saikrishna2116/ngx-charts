@@ -57,6 +57,14 @@
     .active {
       .legend-label-text {
         color: #000;
+        text-decoration: line-through;
+      }
+    }
+
+    .select {
+      .legend-label-text {
+        color: #FFF;
+        text-decoration: line-through;
       }
     }
   }
