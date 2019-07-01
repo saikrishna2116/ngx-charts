@@ -7,6 +7,7 @@ export * from './bar-horizontal-stacked.component';
 export * from './series-horizontal.component';
 
 export * from './bar-label.component';
+export * from './bar-circle.component';
 
 export * from './bar-vertical.component';
 export * from './bar-vertical-2d.component';

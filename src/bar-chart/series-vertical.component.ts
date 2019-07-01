@@ -41,6 +41,18 @@ export enum D0Types {
       [noBarWhenZero]="noBarWhenZero"
       [animations]="animations"
     ></svg:g>
+    <svg:g
+        ngx-charts-bar-circle
+        *ngFor="let b of barsForDataLabels; let i = index; trackBy: trackDataLabelBy"
+        [barX]="b.x"
+        [barY]="b.y"
+        [barWidth]="b.width"
+        [barHeight]="b.height"
+        [value]="b.total"
+        [valueFormatting]="dataLabelFormatting"
+        [orientation]="'vertical'"
+        (dimensionsChanged)="dataLabelHeightChanged.emit({ size: $event, index: i })"
+    />
     <svg:g *ngIf="showDataLabel">
       <svg:g
         ngx-charts-bar-label
