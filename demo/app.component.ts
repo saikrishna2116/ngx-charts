@@ -71,6 +71,10 @@ export class AppComponent implements OnInit {
   height: number = 300;
   fitContainer: boolean = false;
 
+  backup = [];
+  backjson = [];
+  datastore = [];
+
   // options
   showXAxis = true;
   showYAxis = true;
@@ -430,6 +434,11 @@ export class AppComponent implements OnInit {
     this.chartType = chartSelector = chartSelector.replace('/', '');
     this.location.replaceState(this.chartType);
 
+    console.log('backup: ', this.backup);
+    this.backup = [];
+    this.backjson = [];
+    this.datastore = [];
+
     for (const group of this.chartGroups) {
       this.chart = group.charts.find(x => x.selector === chartSelector);
       if (this.chart) break;
@@ -451,14 +460,69 @@ export class AppComponent implements OnInit {
 
   select(data) {
     console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+    if (this.chartType === 'bar-vertical' || this.chartType === 'bar-horizontal' || this.chartType === 'pie-chart') {
+      // tslint:disable-next-line:variable-name
+      const tmp_single = this.single;
+      for (let i = 0; i < this.single.length; i ++) {
+        if (this.single[i].name === data) {
+          if (this.backup[i] !== undefined) {
+            tmp_single[i].value = this.backup[i];
+            delete this.backup[i];
+          } else {
+            console.log(tmp_single[i]);
+            this.backup[i] = tmp_single[i].value;
+            tmp_single[i].value = 0;
+          }
+        }
+      }
+      this.single = [...tmp_single];
+    } else if (this.chartType === 'bar-vertical-2d') {
+      // tslint:disable-next-line:variable-name
+      const tmp_multi = [...this.multi];
+      console.log('Multi Data: ', tmp_multi);
+      for (let i = 0; i < tmp_multi.length; i ++) {
+        for (let j = 0; j < tmp_multi[i].series.length; j ++) {
+          if (tmp_multi[i].series[j].name === data) {
+            if (this.datastore.includes(data)) {
+              console.log('backjson: ', this.backjson);
+              const val = this.backjson.filter(function(da, co) { return da.name === data; });
+              console.log('filter value: ', val[0].value);
+              tmp_multi[i].series[j].value = val[0].value;
+              console.log('parse value: ', tmp_multi[i].series[j].value);
+              [...this.backjson] = this.deleteJSONobject([...this.backjson], data);
+            } else {
+              console.log('Not Includes: ', tmp_multi[i].series[j].value);
+              this.backjson.push(this.multi[i].series[j]);
+              tmp_multi[i].series[j].value = 0;
+            }
+          }
+        }
+      }
+      console.log('backJSON data: ', this.backjson);
+      if (!this.datastore.includes(data)) {
+        this.datastore.push(data);
+      }
+      this.multi = [...tmp_multi];
+    }
+    this.updateData();
+  }
+
+  deleteJSONobject(datafile, item) {
+    for (let i = 0; i < datafile.length; i ++) {
+      if (datafile[i].name === item) {
+        datafile.splice(i, 1);
+        break;
+      }
+    }
+    return datafile;
   }
 
   activate(data) {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
+    // console.log('Activate', JSON.parse(JSON.stringify(data)));
   }
 
   deactivate(data) {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+    // console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 
   getInterpolationType(curveType) {
